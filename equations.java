@@ -17,50 +17,72 @@ public class equations {
     static HashMap<String, Double> knownVars = new HashMap<>();
     static Scanner in = new Scanner(System.in);
 
-    // 2. Standardization: Converts LHS = RHS into LHS - (RHS) = 0
+ // 1. The Pre-Processor (Standardization & Implicit Multiplication)
     static String standard(String s1) {
-        s1 = s1.replace(" ", ""); // Good practice to clear spaces first
-        StringBuffer sb = new StringBuffer(s1);
-        int equalIndex = sb.indexOf("=");
-        sb.insert(equalIndex, "-(");
-        sb.deleteCharAt(equalIndex + 2); // Removes the original '=' sign
-        sb.append(")");
-        return sb.toString();
+        s1 = s1.replace(" ", ""); 
+        
+        StringBuffer eq = new StringBuffer();
+        for (int i = 0; i < s1.length(); i++) {
+            char c = s1.charAt(i);
+            eq.append(c);
+            
+            // CHANGE: Look-ahead logic to inject explicit '*' operators
+            if (i < s1.length() - 1) {
+                char next = s1.charAt(i + 1);
+                // IF Digit touches Letter/Parenthesis OR Letter touches Digit/Letter/Parenthesis
+                if ((Character.isDigit(c) && (Character.isLetter(next) || next == '(')) ||
+                    (Character.isLetter(c) && (Character.isLetterOrDigit(next) || next == '('))) {
+                    eq.append('*'); 
+                }
+            }
+        }
+        
+        // Standardize the equals sign
+        int equalIndex = eq.indexOf("=");
+        if (equalIndex != -1) {
+            eq.insert(equalIndex, "-(");
+            eq.deleteCharAt(equalIndex + 2); // remove '='
+            eq.append(")");
+        }
+        return eq.toString();
     }
 
-    // 3. Parser: Converts Infix expression to Postfix using Shunting-Yard
+    // 2. The Tokenizing Parser
     static String shunting_yard(String s1) {
-        StringBuffer output = new StringBuffer("");
+        StringBuffer output = new StringBuffer();
         Stack<Character> stack = new Stack<>();
         
         for (int i = 0; i < s1.length(); i++) {
             char x = s1.charAt(i);
 
-            if (Character.isLetterOrDigit(x)) {
-                output.append(x); // Operands go straight to output
+            // CHANGE: Group contiguous letters, digits, or decimals into a single token
+            if (Character.isLetterOrDigit(x) || x == '.') {
+                while (i < s1.length() && (Character.isLetterOrDigit(s1.charAt(i)) || s1.charAt(i) == '.')) {
+                    output.append(s1.charAt(i));
+                    i++;
+                }
+                output.append(" "); // CHANGE: Inject space delimiter to separate words
+                i--; // Step back to align with the outer for-loop increment
             } 
             else if (x == '(') {
                 stack.push(x);
             } 
             else if (x == ')') {
                 while (!stack.isEmpty() && stack.peek() != '(') {
-                    output.append(stack.pop());
+                    output.append(stack.pop()).append(" "); // CHANGE: Add spaces after popped operators
                 }
-                if (!stack.isEmpty() && stack.peek() == '(') {
-                    stack.pop(); // Safely discard the '('
-                }
+                if (!stack.isEmpty() && stack.peek() == '(') stack.pop();
             } 
             else if (x == '+' || x == '-' || x == '*' || x == '/') {
                 while (!stack.isEmpty() && stack.peek() != '(' && precendenceHE(x, stack.peek())) {
-                    output.append(stack.pop());
+                    output.append(stack.pop()).append(" "); // CHANGE: Add spaces after popped operators
                 }
-                stack.push(x);  
+                stack.push(x);
             }       
         }
         
-        // Rule 5: Empty the remaining stack
         while (!stack.isEmpty()) {
-            output.append(stack.pop());
+            output.append(stack.pop()).append(" "); // CHANGE: Add spaces after remaining operators
         }
         
         return output.toString();
@@ -74,26 +96,30 @@ public class equations {
     }
 
     // 4. Build AST: Constructs a Binary Tree from the Postfix expression
+   // 3. The Token Tree Builder
     static BN postToTree(String pf) {
         Stack<BN> stack = new Stack<>();
+        
+        // CHANGE: Split the postfix string by spaces into an array of complete words
+        String[] tokens = pf.trim().split("\\s+"); 
 
-        for (int i = 0; i < pf.length(); i++) {
-            char x = pf.charAt(i);
+        for (int i = 0; i < tokens.length; i++) {
+            String t = tokens[i];
+            if (t.isEmpty()) continue;
             
-            if (Character.isLetterOrDigit(x)) {
-                BN node = new BN("" + x);
-                stack.push(node);
-            } 
-            else if (x == '+' || x == '-' || x == '*' || x == '/') {
-                BN node = new BN("" + x);
-                // The first popped element is strictly the right child
+            if (t.equals("+") || t.equals("-") || t.equals("*") || t.equals("/")) {
+                BN node = new BN(t);
                 node.right = stack.pop();
                 node.left = stack.pop();
                 stack.push(node);
+            } 
+            else {
+                // CHANGE: Push the entire string token (e.g., "14" or "vel") into the node
+                stack.push(new BN(t));
             }
         }
-        return stack.pop(); // The final remaining node is the root of the tree
-    }   
+        return stack.pop();
+    }
 
     // 5. Evaluate Engine: Recursively calculates the mathematical value of the tree
     static double evaluate(BN node, double x) {
