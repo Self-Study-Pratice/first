@@ -1,48 +1,21 @@
-1. circular rotation trick
+Project Name: Java Trigonometry Formula Database
 
-logic
+Description:
+A terminal-based Java application built to store, search, and manage mathematical formulas. The system is designed to operate without external database dependencies, relying purely on core Java logic and standard File I/O for data persistence.
 
-1 check if length of s1 and s2 are equal
-2 make s3 = s1 + s1
-3 check if s2 appears inside s3
-4 if yes → s2 is circular rotation of s1
+Current Architecture:
+- Formula.java: The data model defining the structure and attributes (ID, expression, type, category, and keyword lists) of a single formula.
+- Database.java: The central management class utilizing dynamic ArrayList structures to store and retrieve Formula objects in memory.
+- Main.java: The execution entry point containing the Scanner input system and the continuous while-loop routing menu.
 
-example
+Current Development State:
+- Data structures and object relationships are established.
+- Dynamic storage (ArrayList) and basic iteration (List All) are implemented.
+- The interactive terminal menu (Scanner) is fully functional.
+- Next integration phase: Implement String manipulation to process user input, clean whitespace, and auto-generate search keywords for the "Add Formula" function.
 
-s1 = ABCDEF
-s2 = DEFABC
-
-s3 = ABCDEFABCDEF
-
-DEFABC appears in s3
-so s2 is a circular rotation of s1
-
-=======================================================================
-
-2. prime number check using sqrt n
-
-logic
-
-1 if n ≤ 1 → not prime
-2 check divisibility from 2 to sqrt(n)
-3 if any number divides n → not prime
-4 if none divide → prime
-
-example
-
-n = 29
-
-sqrt(29) ≈ 5
-
-check divisibility
-
-29 % 2 ≠ 0
-29 % 3 ≠ 0
-29 % 4 ≠ 0
-29 % 5 ≠ 0
-
-no number divides 29
-
-so 29 is prime
-
-==========================================================================================
+How to Run:
+1. Navigate to the project root directory.
+2. Ensure all files are compiled into the appropriate package structure.
+3. Execute the main controller via the command line (adjust paths as necessary for your local or production environment): 
+   java -cp bin working.Main
