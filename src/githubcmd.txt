@@ -1,0 +1,31 @@
+Git Command Reference
+
+1. SETUP & CONFIGURATION
+git config --global user.name "Name"      : Set your username
+git config --global user.email "Email"    : Set your email
+git clone <url>                           : Download an existing remote repository
+git init                                  : Initialize a new local repository
+
+2. BASIC WORKFLOW (SAVE & UPLOAD)
+git status                                : Check the state of your working directory
+git add .                                 : Stage all modified and new files
+git commit -m "Message"                   : Create a local snapshot of staged files
+git push origin <branch_name>             : Upload local commits to the remote server
+
+3. BRANCHING (ISOLATED WORK)
+git branch                                : List all local branches
+git checkout <branch_name>                : Switch to an existing branch
+git checkout -b <branch_name>             : Create a new branch and switch to it
+git merge <branch_name>                   : Merge the specified branch into your current branch
+
+4. UPDATING & HISTORY
+git pull origin <branch_name>             : Download and merge remote changes to your local branch
+git fetch                                 : Download remote changes without merging them
+git log                                   : View full commit history
+git log --oneline                         : View compact commit history
+
+5. UNDOING & TROUBLESHOOTING
+git restore <file>                        : Discard uncommitted changes in a specific file
+git reset --soft HEAD~1                   : Undo the last commit but keep the file changes
+git reset --hard HEAD~1                   : Undo the last commit and permanently delete the file changes
+git remote -v                             : View the URLs of the connected remote repository
