@@ -1,5 +1,5 @@
 package live;
-
+import java.io.*;
 import java.util.*;
 import static utils.Base.*;
 
@@ -65,6 +65,37 @@ class Formula {
 class Database {
     Scanner in = new Scanner(System.in);
     ArrayList<Formula> database = new ArrayList<>();
+
+
+    // @working 
+    
+    void load()
+    {
+        if((new File("Formula_database")).exists())
+        {
+            try(BufferedReader br = new BufferedReader(new FileReader("Formula_database.txt")))
+            {
+                String line;
+                
+                while((line=br.readLine())!=null)
+                {
+                    int id; 
+                    String expression , type, category ; 
+                    ArrayList<String> keywords=new ArrayList<>();
+                    String temp1[]=line.split("\\|");
+                    for(int i=0;i<temp1.length;i++)
+                    {
+                        String temp2[]=temp1[i].split(":");
+                          
+                    }
+                }
+            }
+            catch(IOException e)
+            {
+
+            }
+        }
+    }
 
     int lastIndex = database.size() - 1;
 
@@ -167,7 +198,8 @@ class Database {
      * 
      */
 
-    void edit(Formula ob) {
+    void edit(Formula ob) 
+    {
         // code here
     }
 
