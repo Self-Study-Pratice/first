@@ -1,4 +1,4 @@
-# Trig Formula Database — Revised Blueprint
+# Trig Formula Database — Revised Blueprint (may or may not be followed) 
 
 ## Architecture
 
