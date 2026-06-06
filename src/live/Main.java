@@ -22,7 +22,8 @@ class Formula {
     }
 
     void addKeywords() {
-        int count = 1;
+
+        int count = key.size();
 
         while (true) {
             pl("Enter Keyword " + count + ":");
@@ -58,7 +59,7 @@ class Formula {
         p("Id => " + this.id + " | ");
         p("Expression => " + this.expression + " | ");
         p("Type => " + this.type + " | ");
-        pl("Category => " + this.category + " |");
+        pl("Category => " + this.category);
     }
 
 }
@@ -127,10 +128,11 @@ class Database {
 
             ob.addKeywords();
 
-        pl("Do you want to edit anything in this formula ? ");
-        if (checkYN() == 0)
-            edit(ob);
+        // pl("Do you want to edit anything in this formula ? ");
+        // if (checkYN() == 0)
+        // edit(ob);
         database.add(ob);
+        lastIndex++;
 
     }
 
@@ -168,56 +170,91 @@ class Database {
         }
     }
 
-    /*
-     * void list(int type)
-     * {
-     * String cat;int flag =0;int flag2=0;
-     * 
-     * switch(type)
-     * {
-     * case 1: flag =1;cat="type"; break;
-     * case 2: flag=2; cat="category"; break;
-     * 
-     * default : cat=""; break;
-     * }
-     * pl("Enter "+cat+":");
-     * 
-     * String s=in.nextLine();
-     * for(int i=0;i<database.size();i++)
-     * {
-     * if(flag==1)
-     * {
-     * if(database.get(i).type.equalsIgnoreCase(cat))
-     * {
-     * System.out.println(database.get(i).expression); flag2++;
-     * }
-     * 
-     * }
-     * else if(flag==2)
-     * 
-     * {
-     * if(database.get(i).category.equalsIgnoreCase(cat))
-     * {
-     * System.out.println(database.get(i).expression); flag2++;
-     * }
-     * 
-     * }
-     * 
-     * 
-     * }
-     * if(flag2==0)
-     * pl(cat+" Not Found");
-     * 
-     * }
-     * 
-     */
+    void edit() {
+        while (true) {
+            pl("1-Edit a formula\n2-Delete a formula\n3-Exit Editing Menu");
+            int choice = in.nextInt();
+            in.nextLine();
 
-    void edit(Formula ob) {
-        // code here
+            if (choice == 1) {
+                System.out.println("Enter ID of formula to edit:");
+                list();
+                int editId = in.nextInt();
+                in.nextLine();
+
+                Formula ob = null;
+
+                for (int i = 0; i < database.size(); i++) {
+                    if (database.get(i).id == editId) {
+                        ob = database.get(i);
+                        break;
+                    }
+                }
+
+                if (ob != null) {
+                    pl("What do you want to edit?\n1-Expression\n2-Type\n3-Category\n4-Add Keywords");
+                    int choice1 = in.nextInt();
+                    in.nextLine();
+
+                    switch (choice1) {
+                        case 1:
+                            System.out.println("Enter New Expression");
+                            ob.expression = in.nextLine().replace(" ", "").toLowerCase();
+                            pl("Successful edit!");
+                            break;
+                        case 2:
+                            System.out.println("Enter New Type");
+                            ob.type = in.nextLine().replace(" ", "").toLowerCase();
+                            pl("Successful edit!");
+                            break;
+                        case 3:
+                            System.out.println("Enter New Category");
+                            ob.category = in.nextLine().replace(" ", "").toLowerCase();
+                            pl("Successful edit!");
+                            break;
+                        case 4:
+                            ob.addKeywords();
+                            pl("Successful edit!");
+                            break;
+                        default:
+                            System.out.println("Invalid Entry!");
+                    }
+                    save();
+                } else {
+                    System.out.println("Formula ID not found.");
+                }
+
+            } else if (choice == 2) {
+                System.out.println("Enter ID of formula to delete (this action cannot be undone!):");
+                list();
+                int deleteId = in.nextInt();
+                in.nextLine();
+
+                boolean found = false;
+
+                for (int i = 0; i < database.size(); i++) {
+                    if (database.get(i).id == deleteId) {
+                        database.remove(i);
+                        found = true;
+                        save();
+                        pl("Formula Deleted.");
+                        break;
+                    }
+                }
+                if (!found)
+                    pl("Invalid Id!");
+
+            } else if (choice == 3) {
+                pl("Exiting Editing Menu..");
+                return;
+            } else {
+                pl("Invalid Choice!");
+            }
+        }
     }
 
     void save() {
-        // code here
+
         try (PrintWriter pw = new PrintWriter(new FileWriter("Formula_database.txt"));) {
 
             pw.println("LASTINDEX:" + lastIndex);
@@ -246,23 +283,68 @@ class Database {
 }
 
 public class Main {
+
     public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
         Database db = new Database();
 
+        db.load();
+        Scanner in = new Scanner(System.in);
+
         while (true) {
-            System.out.println("1. Add Formula\n2. Search\n3. List All\n4. Edit Keywords\n5. Exit");
+            System.out.println("1. Add Formula\n2. Search\n3. List All\n4. Edit\n5. Exit");
+
             int choice = in.nextInt();
-            in.nextLine();
 
-            if (choice == 3) {
-                db.list();
-            } else if (choice == 5) {
-                break;
+            in.nextLine(); // Clear buffer
+
+            switch (choice) {
+                case 1:
+                    // 2. ADD FORMULA: Completely handled by Database.add()
+                    db.add();
+                    db.save();
+                    break;
+
+                case 2:
+                    // 3. SEARCH: Requires a sub-menu to route to the correct search function.
+                    System.out.println("Search by: 1. Expression  2. Keyword");
+                    int searchType = in.nextInt();
+                    in.nextLine();
+                    System.out.println("Enter search term:");
+                    String term = in.nextLine().trim().toLowerCase();
+
+                    if (searchType == 1) {
+                        db.search_Ex(term);
+                    } else if (searchType == 2) {
+                        db.search_Key(term);
+                    } else {
+                        System.out.println("Invalid search type.");
+                    }
+                    break;
+
+                case 3:
+                    // 4. LIST: Completely handled by Database.list()
+                    db.list();
+                    break;
+
+                case 4:
+                    // 5. EDIT: You must find the specific Formula object before passing it to
+                    // edit().
+                    db.edit();
+                    db.save();
+                    break;
+
+                case 5:
+                    // 6. TERMINATION: Must save memory to disk before exiting to prevent data loss.
+                    db.save();
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                    break;
+
+                default:
+                    in.close();
+                    System.out.println("Invalid choice.");
             }
-
         }
-        in.close();
-    }
 
+    }
 }
