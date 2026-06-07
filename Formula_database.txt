@@ -1,2 +1,4 @@
-LASTINDEX:1
-ID:1|EXPRESSION:sin^2x+cos^2x=1|TYPE:identity|CATEGORY:pythagorean identity|KEYWORDS:{sin^2, cos^2, 1}
+LASTINDEX:3
+ID:1<PIPE>EXPRESSION:sin^2x+cos^2x=1<PIPE>TYPE:identity<PIPE>CATEGORY:pythagorean identity<PIPE>KEYWORDS:{sin^2,    cos^2,    1,   doubleangle}
+ID:2<PIPE>EXPRESSION:2sinxcosx=sin2x<PIPE>TYPE:identity<PIPE>CATEGORY:trigonmetry<PIPE>KEYWORDS:{}
+ID:3<PIPE>EXPRESSION:mass=volume*density<PIPE>TYPE:formula<PIPE>CATEGORY:physics<PIPE>KEYWORDS:{energy}

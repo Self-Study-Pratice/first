@@ -5,7 +5,7 @@ import java.util.*;
 import static utils.Base.*;
 
 class Formula {
-    Scanner in = new Scanner(System.in);
+
     int id;
     String expression;
     String type;
@@ -23,18 +23,18 @@ class Formula {
 
     void addKeywords() {
 
-        int count = key.size();
-
+        int count = key.size() + 1;
+        pl("ONLY ENTER SINGLE WORD and DO NOT ENTER ','  IN KEYWORDS ");
         while (true) {
             pl("Enter Keyword " + count + ":");
             count++;
-            String s = in.nextLine().trim().replace(" ", "").toLowerCase();
+            String s = scanner.nextLine().trim().replace(" ","").replace(",", "").toLowerCase();
             if (s.isEmpty())
                 continue;
             this.key.add(s);
             pl("1-Add more keyword\n2-Exit ");
-            if (in.nextInt() == 1) {
-                in.nextLine();
+            if (scanner.nextInt() == 1) {
+                scanner.nextLine();
                 continue;
             } else {
                 return;
@@ -59,13 +59,14 @@ class Formula {
         p("Id => " + this.id + " | ");
         p("Expression => " + this.expression + " | ");
         p("Type => " + this.type + " | ");
-        pl("Category => " + this.category);
+        p("Category => " + this.category + "|");
+        plKeywords();
     }
 
 }
 
 class Database {
-    Scanner in = new Scanner(System.in);
+
     ArrayList<Formula> database = new ArrayList<>();
     int lastIndex = 0;
 
@@ -81,7 +82,7 @@ class Database {
                     int id;
                     String expression, type, category;
                     ArrayList<String> keywords = new ArrayList<>();
-                    String temp1[] = line.split("\\|");
+                    String temp1[] = line.split("\\<PIPE>");
                     // ID:1|EXPRESSION:a+b|TYPE:type|CATEGORY:category|KEYWORDS:{A,B,C}
 
                     id = Integer.parseInt(temp1[0].substring(temp1[0].indexOf(":") + 1));
@@ -100,7 +101,7 @@ class Database {
             }
         } else {
             try (PrintWriter pw = new PrintWriter(new FileWriter("Formula_database.txt"), true);) {
-                String default_Formula = "ID:1|EXPRESSION:sin^2x+cos^2x=1|TYPE:identity|CATEGORY:pythagorean identity|KEYWORDS:{sin^2,cos^2,1}";
+                String default_Formula = "ID:1<PIPE>EXPRESSION:sin^2x+cos^2x=1<PIPE>TYPE:identity<PIPE>CATEGORY:pythagorean identity<PIPE>KEYWORDS:{sin^2,cos^2,1}";
                 pw.println("LASTINDEX:1");
                 pw.println(default_Formula);
                 lastIndex = 1;
@@ -115,20 +116,20 @@ class Database {
 
     void add() {
         pl("Enter Expression:");
-        String ex = in.nextLine().replace(" ", "").toLowerCase();
+        String ex = scanner.nextLine().replace(" ", "").toLowerCase();
         pl("Enter Type:");
-        String ty = in.nextLine().replace(" ", "").toLowerCase();
+        String ty = scanner.nextLine().replace(" ", "").toLowerCase();
         pl("Enter category:");
-        String ca = in.nextLine().replace(" ", "").toLowerCase();
-
+        String ca = scanner.nextLine().replace(" ", "").toLowerCase();
+        scanner.nextLine();
         ArrayList<String> keywords = new ArrayList<>();
         Formula ob = new Formula(lastIndex + 1, ex, ty, ca, keywords);
-        p("Do you want to add keywords? (y/n)");
+        p("Do you want to add keywords? ");
         if (checkYN() == 0)
 
             ob.addKeywords();
 
-        // pl("Do you want to edit anything in this formula ? ");
+        // pl("Do you want to edit anything scanner this formula ? ");
         // if (checkYN() == 0)
         // edit(ob);
         database.add(ob);
@@ -141,11 +142,22 @@ class Database {
         pl("Search Results");
         for (int i = 0; i < database.size(); i++) {
             if (database.get(i).expression.contains(searchWord)) {
-                pl(database.get(i).expression);
+                pl(count + 1 + "=> " + database.get(i).expression);
+                count++;
             }
         }
         if (count == 0)
             pl("None !");
+        System.out.println("Press 1 to return to the main menu");
+        while (true) {
+            
+            if (scanner.nextInt() == 1) {
+                return;
+            } else {
+                System.out.println("Press 1 to return to the main menu , you are dumb aren't you ?");
+                continue;
+            }
+        }
     }
 
     void search_Key(String searchWord) {
@@ -154,13 +166,24 @@ class Database {
         for (int i = 0; i < database.size(); i++) {
             for (int j = 0; j < database.get(i).key.size(); j++) {
                 if (database.get(i).key.get(j).contains(searchWord)) {
-                    database.get(i).info();
+                    p(count+1+"=> ");database.get(i).info();
                     count++;
                 }
             }
         }
         if (count == 0)
             pl("None !");
+        System.out.println("Press 1 to return to the main menu");
+         while (true) {
+            
+            if (scanner.nextInt() == 1) {
+                return;
+            } else {
+                System.out.println("Press 1 to return !");
+                continue;
+            }
+        }
+
     }
 
     void list() { // Id => 1 | Expression => sin2x=2sinxcosx | Type => identity | Category =>
@@ -173,14 +196,15 @@ class Database {
     void edit() {
         while (true) {
             pl("1-Edit a formula\n2-Delete a formula\n3-Exit Editing Menu");
-            int choice = in.nextInt();
-            in.nextLine();
+            int choice = scanner.nextInt();
+            scanner.nextLine();
 
             if (choice == 1) {
-                System.out.println("Enter ID of formula to edit:");
                 list();
-                int editId = in.nextInt();
-                in.nextLine();
+                System.out.println("Enter ID of formula to edit:");
+
+                int editId = scanner.nextInt();
+                scanner.nextLine();
 
                 Formula ob = null;
 
@@ -192,30 +216,32 @@ class Database {
                 }
 
                 if (ob != null) {
-                    pl("What do you want to edit?\n1-Expression\n2-Type\n3-Category\n4-Add Keywords");
-                    int choice1 = in.nextInt();
-                    in.nextLine();
+                    pl("What do you want to edit?\n1-Expression\n2-Type\n3-Category\n4-Add Keywords\n5-Back to Editing Menu");
+                    int choice1 = scanner.nextInt();
+                    scanner.nextLine();
 
                     switch (choice1) {
                         case 1:
                             System.out.println("Enter New Expression");
-                            ob.expression = in.nextLine().replace(" ", "").toLowerCase();
+                            ob.expression = scanner.nextLine().replace(" ", "").toLowerCase();
                             pl("Successful edit!");
                             break;
                         case 2:
                             System.out.println("Enter New Type");
-                            ob.type = in.nextLine().replace(" ", "").toLowerCase();
+                            ob.type = scanner.nextLine().replace(" ", "").toLowerCase();
                             pl("Successful edit!");
                             break;
                         case 3:
                             System.out.println("Enter New Category");
-                            ob.category = in.nextLine().replace(" ", "").toLowerCase();
+                            ob.category = scanner.nextLine().replace(" ", "").toLowerCase();
                             pl("Successful edit!");
                             break;
                         case 4:
                             ob.addKeywords();
                             pl("Successful edit!");
                             break;
+                        case 5:
+                            continue;
                         default:
                             System.out.println("Invalid Entry!");
                     }
@@ -227,8 +253,8 @@ class Database {
             } else if (choice == 2) {
                 System.out.println("Enter ID of formula to delete (this action cannot be undone!):");
                 list();
-                int deleteId = in.nextInt();
-                in.nextLine();
+                int deleteId = scanner.nextInt();
+                scanner.nextLine();
 
                 boolean found = false;
 
@@ -269,8 +295,9 @@ class Database {
                 category = ob.category;
                 expression = ob.expression;
                 keywords = ob.key.toString().replace("[", "").replace("]", "");
-                pw.println("ID:" + id + "|EXPRESSION:" + expression + "|TYPE:" + type + "|CATEGORY:" + category
-                        + "|KEYWORDS:{" + keywords + "}");
+                pw.println("ID:" + id + "<PIPE>EXPRESSION:" + expression + "<PIPE>TYPE:" + type + "<PIPE>CATEGORY:"
+                        + category
+                        + "<PIPE>KEYWORDS:{" + keywords + "}");
 
             }
 
@@ -288,14 +315,13 @@ public class Main {
         Database db = new Database();
 
         db.load();
-        Scanner in = new Scanner(System.in);
 
         while (true) {
             System.out.println("1. Add Formula\n2. Search\n3. List All\n4. Edit\n5. Exit");
 
-            int choice = in.nextInt();
+            int choice = scanner.nextInt();
 
-            in.nextLine(); // Clear buffer
+            scanner.nextLine(); // Clear buffer
 
             switch (choice) {
                 case 1:
@@ -307,10 +333,10 @@ public class Main {
                 case 2:
                     // 3. SEARCH: Requires a sub-menu to route to the correct search function.
                     System.out.println("Search by: 1. Expression  2. Keyword");
-                    int searchType = in.nextInt();
-                    in.nextLine();
+                    int searchType = scanner.nextInt();
+                    scanner.nextLine();
                     System.out.println("Enter search term:");
-                    String term = in.nextLine().trim().toLowerCase();
+                    String term = scanner.nextLine().trim().toLowerCase();
 
                     if (searchType == 1) {
                         db.search_Ex(term);
@@ -341,7 +367,7 @@ public class Main {
                     break;
 
                 default:
-                    in.close();
+                    scanner.close();
                     System.out.println("Invalid choice.");
             }
         }
