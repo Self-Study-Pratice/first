@@ -28,12 +28,12 @@ class Formula {
         while (true) {
             pl("Enter Keyword " + count + ":");
             count++;
-            String s = scanner.nextLine().trim().replace(" ","").replace(",", "").toLowerCase();
+            String s = scanner.nextLine().trim().replace(" ", "").replace(",", "").toLowerCase();
             if (s.isEmpty())
                 continue;
             this.key.add(s);
             pl("1-Add more keyword\n2-Exit ");
-            if (scanner.nextInt() == 1) {
+            if (safeNextInt() == 1) {
                 scanner.nextLine();
                 continue;
             } else {
@@ -150,8 +150,8 @@ class Database {
             pl("None !");
         System.out.println("Press 1 to return to the main menu");
         while (true) {
-            
-            if (scanner.nextInt() == 1) {
+
+            if (safeNextInt() == 1) {
                 return;
             } else {
                 System.out.println("Press 1 to return to the main menu , you are dumb aren't you ?");
@@ -166,7 +166,8 @@ class Database {
         for (int i = 0; i < database.size(); i++) {
             for (int j = 0; j < database.get(i).key.size(); j++) {
                 if (database.get(i).key.get(j).contains(searchWord)) {
-                    p(count+1+"=> ");database.get(i).info();
+                    p(count + 1 + "=> ");
+                    database.get(i).info();
                     count++;
                 }
             }
@@ -174,9 +175,9 @@ class Database {
         if (count == 0)
             pl("None !");
         System.out.println("Press 1 to return to the main menu");
-         while (true) {
-            
-            if (scanner.nextInt() == 1) {
+        while (true) {
+
+            if (safeNextInt() == 1) {
                 return;
             } else {
                 System.out.println("Press 1 to return !");
@@ -196,15 +197,15 @@ class Database {
     void edit() {
         while (true) {
             pl("1-Edit a formula\n2-Delete a formula\n3-Exit Editing Menu");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice = safeNextInt();
+            
 
             if (choice == 1) {
                 list();
                 System.out.println("Enter ID of formula to edit:");
 
-                int editId = scanner.nextInt();
-                scanner.nextLine();
+                int editId = safeNextInt();
+                
 
                 Formula ob = null;
 
@@ -217,8 +218,8 @@ class Database {
 
                 if (ob != null) {
                     pl("What do you want to edit?\n1-Expression\n2-Type\n3-Category\n4-Add Keywords\n5-Back to Editing Menu");
-                    int choice1 = scanner.nextInt();
-                    scanner.nextLine();
+                    int choice1 = safeNextInt();
+                    
 
                     switch (choice1) {
                         case 1:
@@ -253,8 +254,8 @@ class Database {
             } else if (choice == 2) {
                 System.out.println("Enter ID of formula to delete (this action cannot be undone!):");
                 list();
-                int deleteId = scanner.nextInt();
-                scanner.nextLine();
+                int deleteId = safeNextInt();
+                
 
                 boolean found = false;
 
@@ -319,9 +320,9 @@ public class Main {
         while (true) {
             System.out.println("1. Add Formula\n2. Search\n3. List All\n4. Edit\n5. Exit");
 
-            int choice = scanner.nextInt();
+            int choice = safeNextInt();
 
-            scanner.nextLine(); // Clear buffer
+          
 
             switch (choice) {
                 case 1:
@@ -333,8 +334,8 @@ public class Main {
                 case 2:
                     // 3. SEARCH: Requires a sub-menu to route to the correct search function.
                     System.out.println("Search by: 1. Expression  2. Keyword");
-                    int searchType = scanner.nextInt();
-                    scanner.nextLine();
+                    int searchType = safeNextInt();
+                  
                     System.out.println("Enter search term:");
                     String term = scanner.nextLine().trim().toLowerCase();
 
